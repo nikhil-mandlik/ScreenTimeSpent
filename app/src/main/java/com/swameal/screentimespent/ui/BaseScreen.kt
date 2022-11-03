@@ -1,5 +1,6 @@
 package com.swameal.screentimespent.ui
 
+import android.os.SystemClock
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.lifecycle.Lifecycle
@@ -19,16 +20,16 @@ fun BaseScreen(
     val meta = LocalLiveStreamInfo.current.meta
 
     DisposableEffect(key1 = lifecycle) {
-        var startTime = System.currentTimeMillis()
+        var startTime = SystemClock.elapsedRealtime()
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                startTime = System.currentTimeMillis()
+                startTime = SystemClock.elapsedRealtime()
             } else if (event == Lifecycle.Event.ON_PAUSE) {
                 onScreenTimeEvent(
                     ScreenTimeEvent(
                         screenName = backStackEntry.destination.route.orEmpty(),
                         liveSessionId = liveSessionId,
-                        timeSpent = System.currentTimeMillis() - startTime,
+                        timeSpent = SystemClock.elapsedRealtime() - startTime,
                         meta = meta
                     )
                 )

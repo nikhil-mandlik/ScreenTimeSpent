@@ -33,9 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ScreenTimeSpentTheme {
-
                 val bottomSheetNavigator = rememberBottomSheetNavigator()
-
                 val navController = rememberNavController(bottomSheetNavigator)
 
                 val liveStreamInfo by remember {
