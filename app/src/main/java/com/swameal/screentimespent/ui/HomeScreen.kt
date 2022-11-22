@@ -1,35 +1,89 @@
 package com.swameal.screentimespent.ui
 
-import android.widget.ImageView
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
+import com.swameal.screentimespent.data.DataConstants
+import com.swameal.screentimespent.domain.LiveStreakManager
+import com.swameal.screentimespent.domain.OngoingTimer
 
 
 @Composable
 fun HomeScreen(
     navigateToDetails: () -> Unit,
-    navigateToMiniInfo: () -> Unit
+    navigateToMiniInfo: () -> Unit,
+    liveStreakManager: LiveStreakManager
 ) {
+
+    LaunchedEffect(key1 = true) {
+        liveStreakManager.initializeTimer(DataConstants.liveStreakEntity)
+    }
+
+    val liveStreakState by liveStreakManager.container.stateFlow.collectAsState()
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Home")
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = navigateToDetails) {
-            Text(text = "Navigate to Details")
+
+
+        val ongoingTimerHeading by remember(liveStreakState.ongoingTimer) {
+            mutableStateOf(
+                when(val ongoingEvent = liveStreakState.ongoingTimer) {
+                    is OngoingTimer.DayEnded -> "Day Ended"
+                    OngoingTimer.None -> "No Active Timer"
+                    is OngoingTimer.Reward -> "Reward ${ongoingEvent.rewardID} Timer in progress"
+                    is OngoingTimer.Streak -> "Streak Timer in Progress"
+                }
+            )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = navigateToMiniInfo) {
-            Text(text = "Navigate to Bottom Sheet")
+
+        val remainingSeconds by remember(liveStreakState.ongoingTimer) {
+            mutableStateOf(
+                when(val ongoingEvent = liveStreakState.ongoingTimer) {
+                    is OngoingTimer.DayEnded -> 0L
+                    OngoingTimer.None -> 0L
+                    is OngoingTimer.Reward -> ongoingEvent.remainingTimeToComplete
+                    is OngoingTimer.Streak -> ongoingEvent.remainingTimeToComplete
+                }
+            )
         }
+
+
+        Card() {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(text = ongoingTimerHeading, modifier = Modifier.height(56.dp))
+                Divider()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(text = remainingSeconds.toString(), modifier = Modifier.height(56.dp))
+
+            }
+        }
+
+        Row (modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween){
+            Button(onClick = {
+                liveStreakManager.startStreakTimer()
+            }) {
+                Text(text = "Start Timer")
+            }
+            Button(onClick = {
+                liveStreakManager.stopStreakTimer()
+            }) {
+                Text(text = "Stop Timer")
+            }
+        }
+
+
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.swameal.screentimespent.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -14,12 +15,14 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.swameal.screentimespent.data.db.ScreenTimeEvent
+import com.swameal.screentimespent.domain.LiveStreakManager
 import com.swameal.screentimespent.domain.LiveStreamInfo
 import com.swameal.screentimespent.domain.LocalLiveStreamInfo
 import com.swameal.screentimespent.ui.navigation.NavigationGraph
 import com.swameal.screentimespent.ui.theme.ScreenTimeSpentTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -28,6 +31,9 @@ class MainActivity : ComponentActivity() {
 
 
     private val mainViewModel: MainViewModel by viewModels()
+
+    @Inject
+    lateinit var liveStreakManager : LiveStreakManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +72,8 @@ class MainActivity : ComponentActivity() {
                                             },
                                             navigateToMiniInfo = {
                                                 navController.navigate(NavigationGraph.MINI_INFO)
-                                            }
+                                            },
+                                            liveStreakManager = liveStreakManager
                                         )
                                     },
                                     backStackEntry = it,
@@ -100,6 +107,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        Log.i("nikhil", "onPause: is triggered")
     }
 }
 
