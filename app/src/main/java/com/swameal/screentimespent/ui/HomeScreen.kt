@@ -64,7 +64,7 @@ fun HomeScreen(
                 Divider()
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(text = remainingSeconds.toString(), modifier = Modifier.height(56.dp))
+                Text(text = "Remaining Time : $remainingSeconds", modifier = Modifier.height(56.dp))
 
             }
         }
