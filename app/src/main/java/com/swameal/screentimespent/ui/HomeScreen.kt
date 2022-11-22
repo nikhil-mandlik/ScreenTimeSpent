@@ -60,6 +60,30 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(16.dp)
             ) {
+                Row (modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp), horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                    Text(text = "LiveStreak Status : ")
+                    Text(text = "${liveStreakState.liveStreakEntity?.streakStatus}")
+
+                }
+                Divider()
+                Spacer(modifier = Modifier.height(16.dp))
+
+                liveStreakState.liveStreakEntity?.liveStreakRewards?.forEach {
+                    Row (modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp), horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text(text = "Reward ${it.rewardID} Status : ")
+                        Text(text = "${it.rewardStatus}")
+                    }
+                    Divider()
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+
                 Text(text = ongoingTimerHeading, modifier = Modifier.height(56.dp))
                 Divider()
                 Spacer(modifier = Modifier.height(16.dp))
@@ -69,7 +93,9 @@ fun HomeScreen(
             }
         }
 
-        Row (modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween){
+        Row (modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween){
             Button(onClick = {
                 liveStreakManager.startStreakTimer()
             }) {
